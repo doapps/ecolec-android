@@ -16,5 +16,11 @@ class StatusBarUtil {
             }
         }
 
+        fun statusBarChangeDark(window: Window, color: Int) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                window.statusBarColor = color
+
+            }
+        }
     }
 }
