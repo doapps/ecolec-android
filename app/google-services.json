@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "328691147047",
+    "firebase_url": "https://ecolec-android.firebaseio.com",
+    "project_id": "ecolec-android",
+    "storage_bucket": "ecolec-android.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:328691147047:android:eb12b99af2dd946e",
+        "android_client_info": {
+          "package_name": "com.ecolec.cliente"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "328691147047-drl3or5qnj1pu1im76durg2nb6s9rqa3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ecolec.cliente",
+            "certificate_hash": "2dd057b65593b185c606eaeb887ac5aa9f44fa86"
+          }
+        },
+        {
+          "client_id": "328691147047-9abffpqbjpa7d32nd1n14v68jvkhgujj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDXki9MtuDxRto2wCb4dS0XPKa6zZGtmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "328691147047-9abffpqbjpa7d32nd1n14v68jvkhgujj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
