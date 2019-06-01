@@ -2,6 +2,7 @@ package com.ecolec.cliente
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -24,6 +25,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
         var bottomsheetBehavior = BottomSheetBehavior.from(layoutBottomSheet)
+        bottomsheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomsheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
+            override fun onSlide(p0: View, p1: Float) {
+            }
+
+            override fun onStateChanged(p0: View, p1: Int) {
+            }
+        })
+
     }
 
     /**
