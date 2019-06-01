@@ -18,6 +18,6 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent(this, MapsActivity::class.java))
         }
 
-        FirebaseMessaging.getInstance().subscribeToTopic("Notifications")
+        FirebaseMessaging.getInstance().subscribeToTopic("ecolec")
     }
 }
