@@ -1,5 +1,6 @@
 package com.ecolec.cliente
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -26,14 +27,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
         var bottomsheetBehavior = BottomSheetBehavior.from(layoutBottomSheet)
         bottomsheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-        bottomsheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
+        bottomsheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(p0: View, p1: Float) {
             }
 
             override fun onStateChanged(p0: View, p1: Int) {
             }
         })
-
+        recyclerButton.setOnClickListener {
+            startActivity(Intent(this, CameraActivity::class.java))
+        }
     }
 
     /**
