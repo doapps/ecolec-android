@@ -12,7 +12,7 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
         solicitarReciclador.setOnClickListener {
-            startActivity(Intent(this, HomeActivity::class.java))
+            startActivity(Intent(this, MapsActivity::class.java))
         }
 
         FirebaseMessaging.getInstance().subscribeToTopic("Notifications")
