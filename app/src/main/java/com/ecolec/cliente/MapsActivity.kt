@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentSender
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -14,6 +15,7 @@ import android.view.View
 import com.ecolec.cliente.model.Recolector
 import com.ecolec.cliente.retrofit.ApiRetrofit
 import com.ecolec.cliente.retrofit.config.ConfigRetrofit
+import com.ecolec.cliente.util.StatusBarUtil
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -56,6 +58,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+        StatusBarUtil.statusBarChange(window, Color.WHITE)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
