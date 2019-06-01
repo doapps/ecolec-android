@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.ecolec.cliente.model.Recolector
 import com.ecolec.cliente.retrofit.ApiRetrofit
 import com.ecolec.cliente.retrofit.config.ConfigRetrofit
@@ -85,44 +86,48 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     }
 
     private fun sendData() {
-        statusBack = 2
+        if (papelCheck.isChecked || vidrioCheck.isChecked || vidrioCheck.isChecked || metalCheck.isChecked){
+            statusBack = 2
             progressView.visibility = View.VISIBLE
-        val body = JsonObject()
-        body.addProperty("id", 1)
-        body.addProperty("latitude", latNow)
-        body.addProperty("longitude", lonNow)
-        body.addProperty("photo", "https://remp")
+            val body = JsonObject()
+            body.addProperty("id", 1)
+            body.addProperty("latitude", latNow)
+            body.addProperty("longitude", lonNow)
+            body.addProperty("photo", "https://remp")
 
-        val categorias = JsonObject()
-        categorias.addProperty("papel", papelCheck.isChecked)
-        categorias.addProperty("vidrio", vidrioCheck.isChecked)
-        categorias.addProperty("plastico", plasticoCheck.isChecked)
-        categorias.addProperty("metal", metalCheck.isChecked)
+            val categorias = JsonObject()
+            categorias.addProperty("papel", papelCheck.isChecked)
+            categorias.addProperty("vidrio", vidrioCheck.isChecked)
+            categorias.addProperty("plastico", plasticoCheck.isChecked)
+            categorias.addProperty("metal", metalCheck.isChecked)
 
-        body.add("categorias", categorias)
+            body.add("categorias", categorias)
 
-        restApi.sendRecycler(body).enqueue(object : Callback<JsonArray>{
-            override fun onFailure(call: Call<JsonArray>, t: Throwable) {
+            restApi.sendRecycler(body).enqueue(object : Callback<JsonArray>{
+                override fun onFailure(call: Call<JsonArray>, t: Throwable) {
 
-            }
-
-            override fun onResponse(call: Call<JsonArray>, response: Response<JsonArray>) {
-                Log.e("RESPONSE_SEND" , "${response}")
-                if (response.isSuccessful){
-                    checkView.visibility = View.VISIBLE
-                    progressView.visibility = View.GONE
-                    lastView.visibility = View.GONE
-                    Thread{
-                        Thread.sleep(2000)
-                        runOnUiThread {
-                            statusBack = 0
-                            checkView.visibility = View.GONE
-                        }
-                    }.start()
                 }
-            }
 
-        })
+                override fun onResponse(call: Call<JsonArray>, response: Response<JsonArray>) {
+                    Log.e("RESPONSE_SEND" , "${response}")
+                    if (response.isSuccessful){
+                        checkView.visibility = View.VISIBLE
+                        progressView.visibility = View.GONE
+                        lastView.visibility = View.GONE
+                        Thread{
+                            Thread.sleep(2000)
+                            runOnUiThread {
+                                statusBack = 0
+                                checkView.visibility = View.GONE
+                            }
+                        }.start()
+                    }
+                }
+
+            })
+        } else {
+            Toast.makeText(this, "Debe seleccionar por lo menos una opcion" , Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun getRecolectores() {
