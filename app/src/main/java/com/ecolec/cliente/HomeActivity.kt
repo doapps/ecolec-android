@@ -18,6 +18,10 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent(this, MapsActivity::class.java))
         }
 
+        acopiosButton.setOnClickListener {
+            startActivity(Intent(this, MLCameraActivity::class.java))
+        }
+
         FirebaseMessaging.getInstance().subscribeToTopic("Notifications")
     }
 }
