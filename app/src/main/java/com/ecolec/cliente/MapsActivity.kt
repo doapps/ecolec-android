@@ -6,19 +6,23 @@ import android.content.Intent
 import android.content.IntentSender
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.ecolec.cliente.model.Recolector
 import com.ecolec.cliente.retrofit.ApiRetrofit
 import com.ecolec.cliente.retrofit.config.ConfigRetrofit
+import com.ecolec.cliente.util.StatusBarUtil
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
@@ -56,6 +60,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+        StatusBarUtil.statusBarChange(window, Color.WHITE)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
@@ -81,32 +86,48 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     }
 
     private fun sendData() {
-        val body = JsonObject()
-        body.addProperty("id", 1)
-        body.addProperty("latitude", latNow)
-        body.addProperty("longitude", lonNow)
-        body.addProperty("photo", "https://remp")
+        if (papelCheck.isChecked || vidrioCheck.isChecked || vidrioCheck.isChecked || metalCheck.isChecked){
+            statusBack = 2
+            progressView.visibility = View.VISIBLE
+            val body = JsonObject()
+            body.addProperty("id", 1)
+            body.addProperty("latitude", latNow)
+            body.addProperty("longitude", lonNow)
+            body.addProperty("photo", "https://remp")
 
-        val categorias = JsonObject()
-        categorias.addProperty("papel", papelCheck.isChecked)
-        categorias.addProperty("vidrio", vidrioCheck.isChecked)
-        categorias.addProperty("plastico", plasticoCheck.isChecked)
-        categorias.addProperty("metal", metalCheck.isChecked)
+            val categorias = JsonObject()
+            categorias.addProperty("papel", papelCheck.isChecked)
+            categorias.addProperty("vidrio", vidrioCheck.isChecked)
+            categorias.addProperty("plastico", plasticoCheck.isChecked)
+            categorias.addProperty("metal", metalCheck.isChecked)
 
-        body.add("categorias", categorias)
+            body.add("categorias", categorias)
 
-        restApi.sendRecycler(body).enqueue(object : Callback<JsonArray>{
-            override fun onFailure(call: Call<JsonArray>, t: Throwable) {
+            restApi.sendRecycler(body).enqueue(object : Callback<JsonArray>{
+                override fun onFailure(call: Call<JsonArray>, t: Throwable) {
 
-            }
-
-            override fun onResponse(call: Call<JsonArray>, response: Response<JsonArray>) {
-                Log.e("RESPONSE_SEND" , "${response}")
-                if (response.isSuccessful){
                 }
-            }
 
-        })
+                override fun onResponse(call: Call<JsonArray>, response: Response<JsonArray>) {
+                    Log.e("RESPONSE_SEND" , "${response}")
+                    if (response.isSuccessful){
+                        checkView.visibility = View.VISIBLE
+                        progressView.visibility = View.GONE
+                        lastView.visibility = View.GONE
+                        Thread{
+                            Thread.sleep(2000)
+                            runOnUiThread {
+                                statusBack = 0
+                                checkView.visibility = View.GONE
+                            }
+                        }.start()
+                    }
+                }
+
+            })
+        } else {
+            Toast.makeText(this, "Debe seleccionar por lo menos una opcion" , Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun getRecolectores() {
@@ -123,6 +144,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
                         mMap.addMarker(
                             MarkerOptions()
                                 .position(LatLng(it.latitud, it.longitud))
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.location))
                                 .title("${it.nombres}")
                         )
                     }
