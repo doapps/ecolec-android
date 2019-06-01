@@ -16,6 +16,7 @@ import android.widget.Toast
 import com.ecolec.cliente.model.Recolector
 import com.ecolec.cliente.retrofit.ApiRetrofit
 import com.ecolec.cliente.retrofit.config.ConfigRetrofit
+import com.ecolec.cliente.util.Setting
 import com.ecolec.cliente.util.StatusBarUtil
 
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -75,7 +76,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
             }
         })
         recyclerButton.setOnClickListener {
-            startActivityForResult(Intent(this, CameraActivity::class.java), CODE_RESULT_CAMERA)
+
+            if (papelCheck.isChecked || vidrioCheck.isChecked || plasticoCheck.isChecked || metalCheck.isChecked) {
+                startActivityForResult(Intent(this, CameraActivity::class.java), CODE_RESULT_CAMERA)
+
+            } else {
+                Toast.makeText(this, "Debe seleccionar por lo menos una opcion" , Toast.LENGTH_SHORT).show()
+            }
+
         }
 
         sendRecyclerButton.setOnClickListener {
@@ -86,48 +94,44 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     }
 
     private fun sendData() {
-        if (papelCheck.isChecked || vidrioCheck.isChecked || vidrioCheck.isChecked || metalCheck.isChecked){
-            statusBack = 2
-            progressView.visibility = View.VISIBLE
-            val body = JsonObject()
-            body.addProperty("id", 1)
-            body.addProperty("latitude", latNow)
-            body.addProperty("longitude", lonNow)
-            body.addProperty("photo", "https://remp")
+        statusBack = 2
+        progressView.visibility = View.VISIBLE
+        val body = JsonObject()
+        body.addProperty("id", Setting.id)
+        body.addProperty("latitude", latNow)
+        body.addProperty("longitude", lonNow)
+        body.addProperty("photo", "https://remp")
 
-            val categorias = JsonObject()
-            categorias.addProperty("papel", papelCheck.isChecked)
-            categorias.addProperty("vidrio", vidrioCheck.isChecked)
-            categorias.addProperty("plastico", plasticoCheck.isChecked)
-            categorias.addProperty("metal", metalCheck.isChecked)
+        val categorias = JsonObject()
+        categorias.addProperty("papel", papelCheck.isChecked)
+        categorias.addProperty("vidrio", vidrioCheck.isChecked)
+        categorias.addProperty("plastico", plasticoCheck.isChecked)
+        categorias.addProperty("metal", metalCheck.isChecked)
 
-            body.add("categorias", categorias)
+        body.add("categorias", categorias)
 
-            restApi.sendRecycler(body).enqueue(object : Callback<JsonArray>{
-                override fun onFailure(call: Call<JsonArray>, t: Throwable) {
+        restApi.sendRecycler(body).enqueue(object : Callback<JsonObject> {
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.e("RESPONSE_F", "${t}")
+            }
 
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                Log.e("RESPONSE_SEND", "${response}")
+                if (response.isSuccessful) {
+                    checkView.visibility = View.VISIBLE
+                    progressView.visibility = View.GONE
+                    lastView.visibility = View.GONE
+                    Thread {
+                        Thread.sleep(2000)
+                        runOnUiThread {
+                            statusBack = 0
+                            checkView.visibility = View.GONE
+                        }
+                    }.start()
                 }
+            }
 
-                override fun onResponse(call: Call<JsonArray>, response: Response<JsonArray>) {
-                    Log.e("RESPONSE_SEND" , "${response}")
-                    if (response.isSuccessful){
-                        checkView.visibility = View.VISIBLE
-                        progressView.visibility = View.GONE
-                        lastView.visibility = View.GONE
-                        Thread{
-                            Thread.sleep(2000)
-                            runOnUiThread {
-                                statusBack = 0
-                                checkView.visibility = View.GONE
-                            }
-                        }.start()
-                    }
-                }
-
-            })
-        } else {
-            Toast.makeText(this, "Debe seleccionar por lo menos una opcion" , Toast.LENGTH_SHORT).show()
-        }
+        })
     }
 
     private fun getRecolectores() {
@@ -196,7 +200,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
                     override fun onLocationUpdated(p0: Location?) {
                         p0?.let {
                             val l = LatLng(it.latitude, it.longitude)
-                            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(l, 13f)
+                            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(l, 11f)
                             mMap.animateCamera(cameraUpdate)
                         }
 
@@ -238,7 +242,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
                         latNow = it.latitude
                         lonNow = it.longitude
                         val l = LatLng(it.latitude, it.longitude)
-                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(l, 13f)
+                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(l, 11f)
                         mMap.animateCamera(cameraUpdate)
                     }
 

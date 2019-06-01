@@ -14,7 +14,7 @@ interface ApiRetrofit {
     fun getRecolector(): Call<MutableList<Recolector>>
 
     @POST("ciudadano/send-publication")
-    fun sendRecycler(@Body body : JsonObject) : Call<JsonArray>
+    fun sendRecycler(@Body body : JsonObject) : Call<JsonObject>
 
     @POST("ciudadano/login")
     fun signInUser(@Body body: JsonObject): Call<JsonObject>

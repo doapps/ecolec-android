@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
                                 Setting.id = response.body()?.asJsonObject?.get("id")?.asInt ?: 0
                                 instancePreference.nameUser = response.body()?.asJsonObject?.get("nombres")?.asString
                                 instancePreference.idUser = response.body()?.asJsonObject?.get("id")?.asInt ?: 0
+                                Log.e("DATA_LO", "- ${Setting.id}")
                                 startActivity(Intent(applicationContext, MapsActivity::class.java))
                             } else {
                                 val errorBody = JsonParser().parse(response.errorBody()?.string()).asJsonObject
