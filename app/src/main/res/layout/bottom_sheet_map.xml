@@ -36,6 +36,7 @@
             android:textSize="18sp" />
 
         <CheckBox
+            android:id="@+id/papelCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -43,6 +44,7 @@
             android:textSize="15sp" />
 
         <CheckBox
+            android:id="@+id/vidrioCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -50,6 +52,7 @@
             android:textSize="15sp" />
 
         <CheckBox
+            android:id="@+id/plasticoCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -57,10 +60,11 @@
             android:textSize="15sp" />
 
         <CheckBox
+            android:id="@+id/metalCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:text="Carton"
+            android:text="Metal"
             android:textSize="15sp" />
 
         <Button
@@ -121,6 +125,7 @@
             android:textSize="16sp" />
 
         <Button
+            android:id="@+id/sendRecyclerButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"

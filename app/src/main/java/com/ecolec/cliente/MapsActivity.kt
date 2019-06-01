@@ -23,6 +23,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import io.nlopez.smartlocation.OnLocationUpdatedListener
 import io.nlopez.smartlocation.SmartLocation
 import kotlinx.android.synthetic.main.bottom_sheet_map.*
@@ -48,6 +50,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     private var statusBack = 0
     private lateinit var mMap: GoogleMap
 
+    private var latNow: Double = 0.0
+    private var lonNow: Double = 0.0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
@@ -68,8 +73,40 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
             startActivityForResult(Intent(this, CameraActivity::class.java), CODE_RESULT_CAMERA)
         }
 
+        sendRecyclerButton.setOnClickListener {
+            sendData()
+        }
 
         dialog(this)
+    }
+
+    private fun sendData() {
+        val body = JsonObject()
+        body.addProperty("id", 1)
+        body.addProperty("latitude", latNow)
+        body.addProperty("longitude", lonNow)
+        body.addProperty("photo", "https://remp")
+
+        val categorias = JsonObject()
+        categorias.addProperty("papel", papelCheck.isChecked)
+        categorias.addProperty("vidrio", vidrioCheck.isChecked)
+        categorias.addProperty("plastico", plasticoCheck.isChecked)
+        categorias.addProperty("metal", metalCheck.isChecked)
+
+        body.add("categorias", categorias)
+
+        restApi.sendRecycler(body).enqueue(object : Callback<JsonArray>{
+            override fun onFailure(call: Call<JsonArray>, t: Throwable) {
+
+            }
+
+            override fun onResponse(call: Call<JsonArray>, response: Response<JsonArray>) {
+                if (response.isSuccessful){
+
+                }
+            }
+
+        })
     }
 
     private fun getRecolectores() {
@@ -79,7 +116,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
             }
 
             override fun onResponse(call: Call<MutableList<Recolector>>, response: Response<MutableList<Recolector>>) {
-                Log.e("DATA_R" , "${response}")
+                Log.e("DATA_R", "${response}")
                 if (response.isSuccessful) {
 
                     response.body()?.forEach {
@@ -176,6 +213,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
             .start(object : OnLocationUpdatedListener {
                 override fun onLocationUpdated(p0: Location?) {
                     p0?.let {
+                        latNow = it.latitude
+                        lonNow = it.longitude
                         val l = LatLng(it.latitude, it.longitude)
                         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(l, 13f)
                         mMap.animateCamera(cameraUpdate)
