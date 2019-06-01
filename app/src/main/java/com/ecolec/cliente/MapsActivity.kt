@@ -16,6 +16,7 @@ import android.widget.Toast
 import com.ecolec.cliente.model.Recolector
 import com.ecolec.cliente.retrofit.ApiRetrofit
 import com.ecolec.cliente.retrofit.config.ConfigRetrofit
+import com.ecolec.cliente.session.Preference
 import com.ecolec.cliente.util.Setting
 import com.ecolec.cliente.util.StatusBarUtil
 
@@ -94,10 +95,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
     }
 
     private fun sendData() {
+        var instancePreference: Preference = Preference.instance(context = this)
+
         statusBack = 2
         progressView.visibility = View.VISIBLE
         val body = JsonObject()
-        body.addProperty("id", Setting.id)
+        body.addProperty("id", instancePreference.idUser)
         body.addProperty("latitude", latNow)
         body.addProperty("longitude", lonNow)
         body.addProperty("photo", "https://remp")

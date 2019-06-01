@@ -20,7 +20,7 @@ class SplashActivity : AppCompatActivity() {
             if (instancePreference.nameUser == "") {
                 startActivity(Intent(this, MainActivity::class.java))
             } else {
-                startActivity(Intent(this, MapsActivity::class.java))
+                startActivity(Intent(this, HomeActivity::class.java))
             }
         }, Setting.time_splash_screen)
     }
