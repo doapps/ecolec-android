@@ -200,7 +200,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
                     override fun onLocationUpdated(p0: Location?) {
                         p0?.let {
                             val l = LatLng(it.latitude, it.longitude)
-                            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(l, 11f)
+                            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(l, 13f)
                             mMap.animateCamera(cameraUpdate)
                         }
 
@@ -242,7 +242,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
                         latNow = it.latitude
                         lonNow = it.longitude
                         val l = LatLng(it.latitude, it.longitude)
-                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(l, 11f)
+                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(l, 13f)
                         mMap.animateCamera(cameraUpdate)
                     }
 
