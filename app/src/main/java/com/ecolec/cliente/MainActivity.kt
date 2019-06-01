@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.widget.Toast
 import com.ecolec.cliente.retrofit.config.ConfigRetrofit
+import com.ecolec.cliente.session.Preference
 import com.ecolec.cliente.util.Setting
 import com.ecolec.cliente.util.StatusBarUtil
 import com.google.android.gms.tasks.OnSuccessListener
@@ -24,9 +25,11 @@ class MainActivity : AppCompatActivity() {
     private val signIn = ConfigRetrofit.instance()
     val body = JsonObject()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        var instancePreference: Preference = Preference.instance(context = this)
         StatusBarUtil.statusBarChange(window, Color.WHITE)
         registerUser.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
@@ -53,6 +56,8 @@ class MainActivity : AppCompatActivity() {
                         override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                             if (response.isSuccessful) {
                                 Setting.id = response.body()?.asJsonObject?.get("id")?.asInt ?: 0
+                                instancePreference.nameUser = response.body()?.asJsonObject?.get("nombres")?.asString
+                                instancePreference.idUser = response.body()?.asJsonObject?.get("id")?.asInt ?: 0
                                 Log.e("DATA_LO", "- ${Setting.id}")
                                 startActivity(Intent(applicationContext, MapsActivity::class.java))
                             } else {
