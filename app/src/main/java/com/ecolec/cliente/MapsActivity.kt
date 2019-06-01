@@ -9,7 +9,11 @@ import android.graphics.BitmapFactory
 import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import com.ecolec.cliente.model.Recolector
+import com.ecolec.cliente.retrofit.ApiRetrofit
+import com.ecolec.cliente.retrofit.config.ConfigRetrofit
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -25,10 +29,13 @@ import kotlinx.android.synthetic.main.bottom_sheet_map.*
 import pub.devrel.easypermissions.EasyPermissions
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.PermissionRequest
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
 
-
+    private val restApi = ConfigRetrofit.instance()
 
     companion object {
         const val CODE_RESULT_CAMERA = 101
@@ -63,20 +70,40 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
 
 
         dialog(this)
-
-
     }
 
-    private fun dialog(activity: Activity){
+    private fun getRecolectores() {
+        restApi.getRecolector().enqueue(object : Callback<MutableList<Recolector>> {
+            override fun onFailure(call: Call<MutableList<Recolector>>, t: Throwable) {
+
+            }
+
+            override fun onResponse(call: Call<MutableList<Recolector>>, response: Response<MutableList<Recolector>>) {
+                Log.e("DATA_R" , "${response}")
+                if (response.isSuccessful) {
+
+                    response.body()?.forEach {
+                        mMap.addMarker(
+                            MarkerOptions()
+                                .position(LatLng(it.latitud, it.longitud))
+                                .title("${it.nombres}")
+                        )
+                    }
+                }
+            }
+        })
+    }
+
+    private fun dialog(activity: Activity) {
         val perms = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
 
         EasyPermissions.requestPermissions(
-                PermissionRequest.Builder(activity, RC_CAMERA_AND_LOCATION, *perms)
-                    .setRationale("Debe activar el permiso de localización")
-                    .setPositiveButtonText("Si")
-                    .setNegativeButtonText("No")
-                    .build()
-            )
+            PermissionRequest.Builder(activity, RC_CAMERA_AND_LOCATION, *perms)
+                .setRationale("Debe activar el permiso de localización")
+                .setPositiveButtonText("Si")
+                .setNegativeButtonText("No")
+                .build()
+        )
     }
 
     /**
@@ -90,11 +117,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        getRecolectores()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -107,7 +130,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
             }
         }
 
-        if (requestCode == 105 && resultCode == Activity.RESULT_OK){
+        if (requestCode == 105 && resultCode == Activity.RESULT_OK) {
 
             SmartLocation.with(this).location()
                 .start(object : OnLocationUpdatedListener {
@@ -147,7 +170,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         granted()
     }
 
-    private fun granted(){
+    private fun granted() {
 
         SmartLocation.with(this).location()
             .start(object : OnLocationUpdatedListener {
