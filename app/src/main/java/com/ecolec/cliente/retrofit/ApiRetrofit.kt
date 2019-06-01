@@ -15,4 +15,7 @@ interface ApiRetrofit {
 
     @POST("ciudadano/send-publication")
     fun sendRecycler(@Body body : JsonObject) : Call<JsonArray>
+
+    @POST("ciudadano/login")
+    fun signInUser(@Body body: JsonObject): Call<JsonObject>
 }
