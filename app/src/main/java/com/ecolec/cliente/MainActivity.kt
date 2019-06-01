@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
                             if (response.isSuccessful) {
                                 Setting.id = response.body()?.asJsonObject?.get("id")?.asInt ?: 0
                                 Log.e("DATA_LO", "- ${Setting.id}")
-                                startActivity(Intent(applicationContext, MapsActivity::class.java))
+                                startActivity(Intent(applicationContext, HomeActivity::class.java))
                             } else {
                                 val errorBody = JsonParser().parse(response.errorBody()?.string()).asJsonObject
                                 Toast.makeText(applicationContext, errorBody["message"].asString, Toast.LENGTH_SHORT).show()
