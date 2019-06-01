@@ -77,7 +77,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
         })
         recyclerButton.setOnClickListener {
 
-            if (papelCheck.isChecked || vidrioCheck.isChecked || vidrioCheck.isChecked || metalCheck.isChecked) {
+            if (papelCheck.isChecked || vidrioCheck.isChecked || plasticoCheck.isChecked || metalCheck.isChecked) {
                 startActivityForResult(Intent(this, CameraActivity::class.java), CODE_RESULT_CAMERA)
 
             } else {
