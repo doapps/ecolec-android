@@ -24,6 +24,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         var byteArrayImage : ByteArray? = null
     }
 
+    private var statusBack = 0
     private lateinit var mMap: GoogleMap
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,9 +70,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == CODE_RESULT_CAMERA && resultCode == Activity.RESULT_OK){
             byteArrayImage?.let {
+                statusBack = 1
                 photoImage.setImageBitmap(BitmapFactory.decodeByteArray(it, 0, it.size))
+                lastView.visibility = View.VISIBLE
             }
-            lastView.visibility = View.VISIBLE
         }
+    }
+
+    override fun onBackPressed() {
+       when(statusBack){
+           0-> {
+               super.onBackPressed()
+           }
+           1 -> {
+               lastView.visibility = View.GONE
+               statusBack = 0
+           }
+       }
+
     }
 }
