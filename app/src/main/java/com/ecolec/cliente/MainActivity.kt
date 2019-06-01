@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     private val signIn = ConfigRetrofit.instance()
     val body = JsonObject()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -71,8 +70,6 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-
-
 
     }
 }

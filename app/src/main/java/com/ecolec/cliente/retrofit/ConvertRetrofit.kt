@@ -11,7 +11,5 @@ class ConvertRetrofit {
             val activeNetwork = connectivityManager!!.activeNetworkInfo
             return activeNetwork != null && activeNetwork.isConnected
         }
-
-
     }
 }

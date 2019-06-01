@@ -19,8 +19,10 @@ class SplashActivity : AppCompatActivity() {
         Handler().postDelayed({
             if (instancePreference.nameUser == "") {
                 startActivity(Intent(this, MainActivity::class.java))
+                finish()
             } else {
                 startActivity(Intent(this, HomeActivity::class.java))
+                finish()
             }
         }, Setting.time_splash_screen)
     }
