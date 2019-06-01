@@ -101,8 +101,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.Pe
             }
 
             override fun onResponse(call: Call<JsonArray>, response: Response<JsonArray>) {
+                Log.e("RESPONSE_SEND" , "${response}")
                 if (response.isSuccessful){
-
                 }
             }
 
