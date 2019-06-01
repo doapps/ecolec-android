@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
                         override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                             if (response.isSuccessful) {
                                 Setting.id = response.body()?.asJsonObject?.get("id")?.asInt ?: 0
+                                Log.e("DATA_LO", "- ${Setting.id}")
                                 startActivity(Intent(applicationContext, MapsActivity::class.java))
                             } else {
                                 val errorBody = JsonParser().parse(response.errorBody()?.string()).asJsonObject

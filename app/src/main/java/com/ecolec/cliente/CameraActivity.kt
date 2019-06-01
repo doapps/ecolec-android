@@ -2,10 +2,12 @@ package com.ecolec.cliente
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.camerakit.CameraKitView
+import com.ecolec.cliente.util.StatusBarUtil
 import kotlinx.android.synthetic.main.activity_camera.*
 
 class CameraActivity : AppCompatActivity() {
@@ -13,6 +15,7 @@ class CameraActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
+        StatusBarUtil.statusBarChange(window, Color.WHITE)
         captureImage.setOnClickListener {
             cameraKitView.captureImage(object : CameraKitView.ImageCallback {
                 override fun onImage(p0: CameraKitView?, p1: ByteArray?) {
