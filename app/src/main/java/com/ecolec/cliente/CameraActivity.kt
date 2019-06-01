@@ -1,9 +1,11 @@
 package com.ecolec.cliente
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.camerakit.CameraKitView
-import com.jpegkit.Jpeg
 import kotlinx.android.synthetic.main.activity_camera.*
 
 class CameraActivity : AppCompatActivity() {
@@ -12,20 +14,16 @@ class CameraActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
         captureImage.setOnClickListener {
-            cameraKitView.captureImage(object: CameraKitView.ImageCallback{
+            cameraKitView.captureImage(object : CameraKitView.ImageCallback {
                 override fun onImage(p0: CameraKitView?, p1: ByteArray?) {
-                    Thread {
-                        val jpeg = p1?.let { it1 -> Jpeg(it1) }
-                        /*
-                        imageView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                imageView.setJpeg(jpeg);
-                            }
-                        });
-                        */
+                    Log.e("DATA", "TRUE")
+                    runOnUiThread {
+                        val returnIntent = Intent()
+                        MapsActivity.byteArrayImage = p1
+                        setResult(Activity.RESULT_OK, returnIntent)
+                        this@CameraActivity.finish()
+                    }
 
-                    }.start()
                 }
             })
         }

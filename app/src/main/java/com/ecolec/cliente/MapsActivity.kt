@@ -1,6 +1,9 @@
 package com.ecolec.cliente
 
+import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -15,6 +18,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.bottom_sheet_map.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    companion object {
+        const val CODE_RESULT_CAMERA = 101
+        var byteArrayImage : ByteArray? = null
+    }
 
     private lateinit var mMap: GoogleMap
 
@@ -35,7 +43,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
         recyclerButton.setOnClickListener {
-            startActivity(Intent(this, CameraActivity::class.java))
+            startActivityForResult(Intent(this, CameraActivity::class.java), CODE_RESULT_CAMERA)
         }
     }
 
@@ -57,5 +65,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
     }
 
-
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == CODE_RESULT_CAMERA && resultCode == Activity.RESULT_OK){
+            byteArrayImage?.let {
+                photoImage.setImageBitmap(BitmapFactory.decodeByteArray(it, 0, it.size))
+            }
+            lastView.visibility = View.VISIBLE
+        }
+    }
 }
