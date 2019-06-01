@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ConfigRetrofit {
     val base: Retrofit = Retrofit.Builder()
-        .baseUrl("")
+        .baseUrl("http://api.sandbox.doapps.pe/ecolec/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 }
