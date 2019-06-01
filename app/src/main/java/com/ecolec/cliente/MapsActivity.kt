@@ -1,12 +1,19 @@
 package com.ecolec.cliente
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.IntentSender
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import com.ecolec.cliente.model.Recolector
+import com.ecolec.cliente.retrofit.ApiRetrofit
+import com.ecolec.cliente.retrofit.config.ConfigRetrofit
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -14,18 +21,37 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.bottom_sheet_map.*
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import io.nlopez.smartlocation.OnLocationUpdatedListener
+import io.nlopez.smartlocation.SmartLocation
+import kotlinx.android.synthetic.main.bottom_sheet_map.*
+import pub.devrel.easypermissions.EasyPermissions
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.PermissionRequest
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
+
+    private val restApi = ConfigRetrofit.instance()
 
     companion object {
         const val CODE_RESULT_CAMERA = 101
-        var byteArrayImage : ByteArray? = null
+        var byteArrayImage: ByteArray? = null
+        const val RC_CAMERA_AND_LOCATION = 102
+        const val UPDATE_INTERVAL = 5000f
+        const val FASTEST_INTERVAL = 5000f
     }
 
     private var statusBack = 0
     private lateinit var mMap: GoogleMap
+
+    private var latNow: Double = 0.0
+    private var lonNow: Double = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +72,75 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         recyclerButton.setOnClickListener {
             startActivityForResult(Intent(this, CameraActivity::class.java), CODE_RESULT_CAMERA)
         }
+
+        sendRecyclerButton.setOnClickListener {
+            sendData()
+        }
+
+        dialog(this)
+    }
+
+    private fun sendData() {
+        val body = JsonObject()
+        body.addProperty("id", 1)
+        body.addProperty("latitude", latNow)
+        body.addProperty("longitude", lonNow)
+        body.addProperty("photo", "https://remp")
+
+        val categorias = JsonObject()
+        categorias.addProperty("papel", papelCheck.isChecked)
+        categorias.addProperty("vidrio", vidrioCheck.isChecked)
+        categorias.addProperty("plastico", plasticoCheck.isChecked)
+        categorias.addProperty("metal", metalCheck.isChecked)
+
+        body.add("categorias", categorias)
+
+        restApi.sendRecycler(body).enqueue(object : Callback<JsonArray>{
+            override fun onFailure(call: Call<JsonArray>, t: Throwable) {
+
+            }
+
+            override fun onResponse(call: Call<JsonArray>, response: Response<JsonArray>) {
+                Log.e("RESPONSE_SEND" , "${response}")
+                if (response.isSuccessful){
+                }
+            }
+
+        })
+    }
+
+    private fun getRecolectores() {
+        restApi.getRecolector().enqueue(object : Callback<MutableList<Recolector>> {
+            override fun onFailure(call: Call<MutableList<Recolector>>, t: Throwable) {
+
+            }
+
+            override fun onResponse(call: Call<MutableList<Recolector>>, response: Response<MutableList<Recolector>>) {
+                Log.e("DATA_R", "${response}")
+                if (response.isSuccessful) {
+
+                    response.body()?.forEach {
+                        mMap.addMarker(
+                            MarkerOptions()
+                                .position(LatLng(it.latitud, it.longitud))
+                                .title("${it.nombres}")
+                        )
+                    }
+                }
+            }
+        })
+    }
+
+    private fun dialog(activity: Activity) {
+        val perms = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+
+        EasyPermissions.requestPermissions(
+            PermissionRequest.Builder(activity, RC_CAMERA_AND_LOCATION, *perms)
+                .setRationale("Debe activar el permiso de localización")
+                .setPositiveButtonText("Si")
+                .setNegativeButtonText("No")
+                .build()
+        )
     }
 
     /**
@@ -59,34 +154,90 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        getRecolectores()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == CODE_RESULT_CAMERA && resultCode == Activity.RESULT_OK){
+        if (requestCode == CODE_RESULT_CAMERA && resultCode == Activity.RESULT_OK) {
             byteArrayImage?.let {
                 statusBack = 1
                 photoImage.setImageBitmap(BitmapFactory.decodeByteArray(it, 0, it.size))
                 lastView.visibility = View.VISIBLE
             }
         }
+
+        if (requestCode == 105 && resultCode == Activity.RESULT_OK) {
+
+            SmartLocation.with(this).location()
+                .start(object : OnLocationUpdatedListener {
+                    override fun onLocationUpdated(p0: Location?) {
+                        p0?.let {
+                            val l = LatLng(it.latitude, it.longitude)
+                            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(l, 13f)
+                            mMap.animateCamera(cameraUpdate)
+                        }
+
+                    }
+                })
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    @AfterPermissionGranted(RC_CAMERA_AND_LOCATION)
+    private fun methodRequiresTwoPermission() {
+        val perms = arrayOf<String>(Manifest.permission.ACCESS_FINE_LOCATION)
+        if (EasyPermissions.hasPermissions(this, *perms)) {
+            granted()
+        } else {
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(
+                this@MapsActivity, "Debe activar el permiso de localización",
+                RC_CAMERA_AND_LOCATION, *perms
+            )
+        }
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+
+        granted()
+    }
+
+    private fun granted() {
+
+        SmartLocation.with(this).location()
+            .start(object : OnLocationUpdatedListener {
+                override fun onLocationUpdated(p0: Location?) {
+                    p0?.let {
+                        latNow = it.latitude
+                        lonNow = it.longitude
+                        val l = LatLng(it.latitude, it.longitude)
+                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(l, 13f)
+                        mMap.animateCamera(cameraUpdate)
+                    }
+
+                }
+            })
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+
     }
 
     override fun onBackPressed() {
-       when(statusBack){
-           0-> {
-               super.onBackPressed()
-           }
-           1 -> {
-               lastView.visibility = View.GONE
-               statusBack = 0
-           }
-       }
+        when (statusBack) {
+            0 -> {
+                super.onBackPressed()
+            }
+            1 -> {
+                lastView.visibility = View.GONE
+                statusBack = 0
+            }
+        }
 
     }
 }

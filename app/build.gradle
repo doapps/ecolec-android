@@ -43,4 +43,8 @@ dependencies {
     implementation 'com.camerakit:jpegkit:0.1.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
+    implementation 'pub.devrel:easypermissions:3.0.0'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'io.nlopez.smartlocation:library:3.3.3'
+
 }
