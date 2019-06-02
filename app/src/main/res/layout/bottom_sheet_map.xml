@@ -25,10 +25,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <View
-            android:layout_width="match_parent"
+            android:layout_width="30dp"
+            android:layout_gravity="center"
             android:layout_height="2dp"
             android:layout_marginTop="16dp"
-            android:background="@color/colorAccent" />
+            android:background="@android:color/darker_gray" />
 
         <TextView
             android:layout_width="match_parent"
@@ -102,10 +103,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <View
-            android:layout_width="match_parent"
+            android:layout_width="30dp"
+            android:layout_gravity="center"
             android:layout_height="2dp"
             android:layout_marginTop="16dp"
-            android:background="@color/colorAccent" />
+            android:background="@android:color/darker_gray" />
 
         <TextView
             android:layout_width="match_parent"

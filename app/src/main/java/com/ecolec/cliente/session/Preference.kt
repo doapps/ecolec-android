@@ -19,12 +19,12 @@ object Preference {
     var nameUser: String?
         get() = sharedPreferences.getString(nameUserPreference, "")
         set(value) {
-            editor.putString(nameUserPreference, value).commit()
+            editor.putString(nameUserPreference, value).apply()
         }
 
     var idUser: Int
         get() = sharedPreferences.getInt(idUserPreference, -1)
         set(value) {
-            editor.putInt(idUserPreference, value).commit()
+            editor.putInt(idUserPreference, value).apply()
         }
 }
